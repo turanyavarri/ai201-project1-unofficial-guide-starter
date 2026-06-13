@@ -23,10 +23,10 @@ def clean_text(text):
     
     # Remove lines containing ad/promoted content keywords
     ad_keywords = [
-        'Promoted', 'JumpCloud', 'TruGreen', 'USAA', 'monday.com',
-        'guardianbikes', 'washingtonpost', 'schwab', 'rxnt', 'Clickable image',
-        'Collapse video player', 'Thumbnail image', 'Sign Up', 'Shop Now',
-        'Learn More', 'Subscribe', '0:00', 'video player'
+    'Promoted', 'JumpCloud', 'TruGreen', 'USAA', 'monday.com',
+    'guardianbikes', 'GuardianBike', 'washingtonpost', 'schwab', 'rxnt', 
+    'Clickable image', 'Collapse video player', 'Thumbnail image', 'Sign Up', 
+    'Shop Now', 'Learn More', 'Subscribe', '0:00', 'video player'
     ]
     lines = text.split('\n')
     cleaned_lines = []
@@ -35,13 +35,21 @@ def clean_text(text):
             cleaned_lines.append(line)
     text = '\n'.join(cleaned_lines)
     
-    # Remove usernames and timestamps
+    # Remove usernames and URLs
     text = re.sub(r'u/\w+', '', text)
-    text = re.sub(r'\b\d+[ymdh] ago\b', '', text)
-    text = re.sub(r'\d+ more repl\w+', '', text)
     text = re.sub(r'https?://\S+', '', text)
     text = re.sub(r'\w+\.(com|org|net|gov)\b', '', text)
     
+    # Remove noise
+    text = re.sub(r'\bavatar\b', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'Local Guide·[\d]+ reviews·[\d]+ photos', '', text)
+    text = re.sub(r'\d+ more repl\w+', '', text)
+    text = re.sub(r'\b\d+[ymdh] ago\b', '', text)
+    text = re.sub(r'•', '', text)
+    
+    # Only remove 1-2 digit standalone numbers (vote counts), keep 3+ digit numbers like 210
+    text = re.sub(r'(?<!\w)\d{1,2}(?!\w)', '', text)
+
     # Clean whitespace
     text = re.sub(r'\s+', ' ', text)
     text = text.strip()
